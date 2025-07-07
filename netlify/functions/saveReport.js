@@ -1,7 +1,8 @@
+// netlify/functions/saveReport.js
 const fs = require('fs');
 const path = require('path');
 
-exports.handler = async (event) => {
+exports.handler = async function(event, context) {
   // Only allow POST requests
   if (event.httpMethod !== 'POST') {
     return {
@@ -11,69 +12,48 @@ exports.handler = async (event) => {
   }
 
   try {
-    // Parse incoming data
-    const data = JSON.parse(event.body);
-
+    // Parse the incoming data
+    const incomingData = JSON.parse(event.body);
+    
     // Simple authentication check
-    if (data.auth !== 'secure-submission-token') {
+    if (incomingData.auth !== 'secure-submission-token') {
       return {
         statusCode: 401,
         body: JSON.stringify({ error: 'Unauthorized' })
       };
     }
 
-    // Remove auth token before saving
-    delete data.auth;
-
-    // Path to our JSON file
+    // Prepare the data to save (remove auth token)
+    const { auth, ...reportData } = incomingData;
+    
+    // Define the path to the JSON file
     const filePath = path.join(process.cwd(), 'netlify', 'functions', 'maandamanoCheck.json');
     
-    // Read existing data or initialize empty array
-    let existingData = [];
-    try {
-      if (fs.existsSync(filePath)) {
-        const fileContent = fs.readFileSync(filePath, 'utf8');
-        existingData = JSON.parse(fileContent);
-      }
-    } catch (readError) {
-      console.error('Error reading JSON file:', readError);
-      return {
-        statusCode: 500,
-        body: JSON.stringify({ error: 'Error reading existing data' })
-      };
+    // Initialize data array
+    let allReports = [];
+    
+    // Check if file exists and read existing data
+    if (fs.existsSync(filePath)) {
+      const fileData = fs.readFileSync(filePath, 'utf8');
+      allReports = JSON.parse(fileData);
     }
-
-    // Add new data
-    existingData.push(data);
-
-    // Write back to file with error handling
-    try {
-      fs.writeFileSync(filePath, JSON.stringify(existingData, null, 2), 'utf8');
-    } catch (writeError) {
-      console.error('Error writing to JSON file:', writeError);
-      return {
-        statusCode: 500,
-        body: JSON.stringify({ error: 'Error saving data' })
-      };
-    }
-
-    // Success response
+    
+    // Add new report to the array
+    allReports.push(reportData);
+    
+    // Write the updated data back to the file
+    fs.writeFileSync(filePath, JSON.stringify(allReports, null, 2));
+    
     return {
       statusCode: 200,
-      body: JSON.stringify({ 
-        message: 'Report saved successfully',
-        savedData: data
-      })
+      body: JSON.stringify({ message: 'Report saved successfully' })
     };
-
+    
   } catch (error) {
-    console.error('Processing error:', error);
+    console.error('Error:', error);
     return {
       statusCode: 500,
-      body: JSON.stringify({ 
-        error: 'Internal Server Error',
-        details: error.message 
-      })
+      body: JSON.stringify({ error: 'Internal Server Error', details: error.message })
     };
   }
 };
