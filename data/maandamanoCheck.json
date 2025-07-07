@@ -448,5 +448,14 @@
     "timestamp": "2025-07-07T18:30:00.000Z",
     "id": "1751913000000",
     "ip": null
+  },
+  {
+    "protest": "#SabaSaba",
+    "county": "Machakos",
+    "constituency": "Machakos Town",
+    "town": "machakos town ",
+    "timestamp": "2025-07-07T15:25:07.631Z",
+    "id": "1751901907631",
+    "ip": null
   }
 ]
