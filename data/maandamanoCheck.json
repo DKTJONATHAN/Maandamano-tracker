@@ -16,5 +16,95 @@
     "timestamp": "2025-07-07T13:58:01.224Z",
     "id": "1751896681224",
     "ip": null
+  },
+  {
+    "protest": "#SabaSaba",
+    "county": "Nairobi",
+    "constituency": "Kibra",
+    "town": "Kibra",
+    "timestamp": "2025-07-07T14:00:00.000Z",
+    "id": "1751896800000",
+    "ip": null
+  },
+  {
+    "protest": "#SabaSaba",
+    "county": "Nairobi",
+    "constituency": "Westlands",
+    "town": "Westlands",
+    "timestamp": "2025-07-07T14:05:00.000Z",
+    "id": "1751897100000",
+    "ip": null
+  },
+  {
+    "protest": "#SabaSaba",
+    "county": "Nairobi",
+    "constituency": "Dagoretti North",
+    "town": "Kawangware",
+    "timestamp": "2025-07-07T14:10:00.000Z",
+    "id": "1751897400000",
+    "ip": null
+  },
+  {
+    "protest": "#SabaSaba",
+    "county": "Nairobi",
+    "constituency": "Langata",
+    "town": "Nairobi South",
+    "timestamp": "2025-07-07T14:15:00.000Z",
+    "id": "1751897700000",
+    "ip": null
+  },
+  {
+    "protest": "#SabaSaba",
+    "county": "Mombasa",
+    "constituency": "Kisauni",
+    "town": "Kisauni",
+    "timestamp": "2025-07-07T14:20:00.000Z",
+    "id": "1751898000000",
+    "ip": null
+  },
+  {
+    "protest": "#SabaSaba",
+    "county": "Kisumu",
+    "constituency": "Kisumu Central",
+    "town": "Kisumu",
+    "timestamp": "2025-07-07T14:25:00.000Z",
+    "id": "1751898300000",
+    "ip": null
+  },
+  {
+    "protest": "#SabaSaba",
+    "county": "Nairobi",
+    "constituency": "Embakasi East",
+    "town": "Embakasi",
+    "timestamp": "2025-07-07T14:30:00.000Z",
+    "id": "1751898600000",
+    "ip": null
+  },
+  {
+    "protest": "#SabaSaba",
+    "county": "Nairobi",
+    "constituency": "Mathare",
+    "town": "Mathare",
+    "timestamp": "2025-07-07T14:35:00.000Z",
+    "id": "1751898900000",
+    "ip": null
+  },
+  {
+    "protest": "#SabaSaba",
+    "county": "Nakuru",
+    "constituency": "Nakuru Town West",
+    "town": "Nakuru",
+    "timestamp": "2025-07-07T14:40:00.000Z",
+    "id": "1751899200000",
+    "ip": null
+  },
+  {
+    "protest": "#SabaSaba",
+    "county": "Nairobi",
+    "constituency": "Starehe",
+    "town": "Nairobi CBD",
+    "timestamp": "2025-07-07T14:45:00.000Z",
+    "id": "1751899500000",
+    "ip": null
   }
 ]
