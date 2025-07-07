@@ -6,3 +6,9 @@
   from = "/api/*"
   to = "/.netlify/functions/server"
   status = 200
+
+# Add this new redirect for your data
+[[redirects]]
+  from = "/data/maandamanoCheck.json"
+  to = "/.netlify/functions/getData"
+  status = 200
