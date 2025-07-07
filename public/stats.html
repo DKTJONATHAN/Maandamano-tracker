@@ -22,7 +22,7 @@
 
   <main class="container mx-auto px-4 py-8">
     <h1 class="text-2xl font-bold text-center mb-8 text-gray-800">Live Protest Statistics</h1>
-    
+
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
       <div class="bg-white p-4 rounded-lg shadow">
@@ -32,10 +32,12 @@
       <div class="bg-white p-4 rounded-lg shadow">
         <h3 class="text-gray-500 font-medium">Counties Active</h3>
         <p id="countiesActive" class="text-3xl font-bold text-red-600">0/47</p>
+        <p id="countiesPercentage" class="text-sm text-gray-500">0% of counties</p>
       </div>
       <div class="bg-white p-4 rounded-lg shadow">
         <h3 class="text-gray-500 font-medium">Constituencies Active</h3>
         <p id="constituenciesActive" class="text-3xl font-bold text-red-600">0/290</p>
+        <p id="constituenciesPercentage" class="text-sm text-gray-500">0% of constituencies</p>
       </div>
     </div>
 
@@ -46,8 +48,8 @@
         <canvas id="countyChart" height="250"></canvas>
       </div>
       <div class="bg-white p-4 rounded-lg shadow">
-        <h3 class="text-lg font-semibold mb-2">Protest Types</h3>
-        <canvas id="protestChart" height="250"></canvas>
+        <h3 class="text-lg font-semibold mb-2">Top 5 Hotspot Constituencies</h3>
+        <canvas id="hotspotChart" height="250"></canvas>
       </div>
     </div>
 
@@ -58,9 +60,10 @@
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
             <tr>
+              <th class="px-4 py-2 text-left">Rank</th>
+              <th class="px-4 py-2 text-left">Constituency</th>
               <th class="px-4 py-2 text-left">County</th>
               <th class="px-4 py-2 text-left">Reports</th>
-              <th class="px-4 py-2 text-left">Last Activity</th>
             </tr>
           </thead>
           <tbody id="hotspotsTable" class="divide-y divide-gray-200">
@@ -74,66 +77,161 @@
   <script>
     async function loadStats() {
       try {
-        const response = await fetch('/api/stats');
-        const data = await response.json();
-        
+        // Load the JSON data
+        const response = await fetch('data/maandamanoCheck.json');
+        const reports = await response.json();
+
+        // Process the data
+        const stats = analyzeData(reports);
+
         // Update cards
-        document.getElementById('totalReports').textContent = data.totalReports || 0;
-        document.getElementById('countiesActive').textContent = `${data.counties.length || 0}/47`;
-        document.getElementById('constituenciesActive').textContent = `${data.constituencies || 0}/290`;
-        
+        document.getElementById('totalReports').textContent = stats.totalReports;
+        document.getElementById('countiesActive').textContent = `${stats.activeCounties.length}/47`;
+        document.getElementById('countiesPercentage').textContent = `${stats.countyPercentage}% of counties`;
+        document.getElementById('constituenciesActive').textContent = `${stats.activeConstituencies.length}/290`;
+        document.getElementById('constituenciesPercentage').textContent = `${stats.constituencyPercentage}% of constituencies`;
+
         // Update hotspots table
         const tableBody = document.getElementById('hotspotsTable');
-        tableBody.innerHTML = data.hotspots.map(hotspot => `
+        tableBody.innerHTML = stats.topConstituencies.map((constituency, index) => `
           <tr>
-            <td class="px-4 py-2">${hotspot.county}</td>
-            <td class="px-4 py-2">${hotspot.reports}</td>
-            <td class="px-4 py-2">${new Date(hotspot.latest).toLocaleString()}</td>
+            <td class="px-4 py-2">${index + 1}</td>
+            <td class="px-4 py-2">${constituency.name}</td>
+            <td class="px-4 py-2">${constituency.county}</td>
+            <td class="px-4 py-2">${constituency.reports}</td>
           </tr>
         `).join('');
-        
+
         // Render charts
-        renderCharts(data);
+        renderCharts(stats);
       } catch (error) {
         console.error("Error loading stats:", error);
       }
     }
 
-    function renderCharts(data) {
+    function analyzeData(reports) {
+      // Count total reports
+      const totalReports = reports.length;
+
+      // Track unique counties and constituencies
+      const counties = new Set();
+      const constituencies = new Set();
+      const constituencyCounts = {};
+      const countyConstituencies = {};
+
+      reports.forEach(report => {
+        if (report.county) {
+          counties.add(report.county);
+          
+          // Track constituencies
+          if (report.constituency) {
+            constituencies.add(report.constituency);
+            
+            // Count reports per constituency
+            if (!constituencyCounts[report.constituency]) {
+              constituencyCounts[report.constituency] = 0;
+            }
+            constituencyCounts[report.constituency]++;
+            
+            // Track which county the constituency is in
+            if (!countyConstituencies[report.constituency]) {
+              countyConstituencies[report.constituency] = report.county;
+            }
+          }
+        }
+      });
+
+      // Convert to arrays
+      const activeCounties = Array.from(counties);
+      const activeConstituencies = Array.from(constituencies);
+
+      // Calculate percentages
+      const countyPercentage = ((activeCounties.length / 47) * 100).toFixed(1);
+      const constituencyPercentage = ((activeConstituencies.length / 290) * 100).toFixed(1);
+
+      // Prepare top constituencies data
+      const constituencyEntries = Object.entries(constituencyCounts);
+      constituencyEntries.sort((a, b) => b[1] - a[1]);
+      const topConstituencies = constituencyEntries.slice(0, 10).map(([name, reports]) => ({
+        name,
+        county: countyConstituencies[name],
+        reports
+      }));
+
+      return {
+        totalReports,
+        activeCounties,
+        activeConstituencies,
+        countyPercentage,
+        constituencyPercentage,
+        topConstituencies,
+        constituencyCounts: constituencyEntries.slice(0, 5)
+      };
+    }
+
+    function renderCharts(stats) {
       // County Chart
-      new Chart(
-        document.getElementById('countyChart'),
+      const countyCtx = document.getElementById('countyChart');
+      if (countyCtx.chart) {
+        countyCtx.chart.destroy();
+      }
+      countyCtx.chart = new Chart(
+        countyCtx,
         {
           type: 'doughnut',
           data: {
-            labels: ['Active', 'Inactive'],
+            labels: ['Active Counties', 'Inactive Counties'],
             datasets: [{
-              data: [data.counties.length, 47 - data.counties.length],
+              data: [stats.activeCounties.length, 47 - stats.activeCounties.length],
               backgroundColor: ['#dc2626', '#e5e7eb']
             }]
+          },
+          options: {
+            plugins: {
+              legend: {
+                position: 'bottom'
+              }
+            }
           }
         }
       );
-      
-      // Protest Chart (example - customize with your data)
-      new Chart(
-        document.getElementById('protestChart'),
+
+      // Hotspot Chart
+      const hotspotCtx = document.getElementById('hotspotChart');
+      if (hotspotCtx.chart) {
+        hotspotCtx.chart.destroy();
+      }
+      hotspotCtx.chart = new Chart(
+        hotspotCtx,
         {
           type: 'bar',
           data: {
-            labels: data.protests || ['#SabaSaba'],
+            labels: stats.constituencyCounts.map(item => item[0]),
             datasets: [{
-              label: 'Reports',
-              data: data.protestCounts || [data.totalReports || 0],
+              label: 'Number of Reports',
+              data: stats.constituencyCounts.map(item => item[1]),
               backgroundColor: '#dc2626'
             }]
+          },
+          options: {
+            responsive: true,
+            scales: {
+              y: {
+                beginAtZero: true
+              }
+            },
+            plugins: {
+              legend: {
+                display: false
+              }
+            }
           }
         }
       );
     }
 
     // Load data on page load
-    loadStats();
+    document.addEventListener('DOMContentLoaded', loadStats);
     // Refresh every 30 seconds
     setInterval(loadStats, 30000);
   </script>
