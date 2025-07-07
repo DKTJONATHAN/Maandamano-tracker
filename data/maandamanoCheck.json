@@ -1,0 +1,42 @@
+{
+  "reports": [
+    {
+      "id": "1a2b3c4d",
+      "protest": "#SabaSaba",
+      "county": "Nairobi",
+      "constituency": "Mathare",
+      "town": "Huruma",
+      "comments": "Large crowd gathering near the market",
+      "timestamp": "2023-07-07T09:30:00Z"
+    },
+    {
+      "id": "5e6f7g8h",
+      "protest": "#RutoMustGo",
+      "county": "Kisumu",
+      "constituency": "Kisumu Central",
+      "town": "CBD",
+      "comments": "Protesters marching along Oginga Odinga Street",
+      "timestamp": "2023-07-07T10:15:00Z"
+    }
+  ],
+  "stats": {
+    "totalReports": 1250,
+    "activeProtests": ["#SabaSaba", "#RutoMustGo"],
+    "counties": ["Nairobi", "Kisumu", "Mombasa", "Nakuru"],
+    "totalConstituencies": 45,
+    "hotspots": [
+      {
+        "county": "Nairobi",
+        "constituencies": 8,
+        "reports": 420,
+        "latest": "2023-07-07T11:20:00Z"
+      },
+      {
+        "county": "Kisumu",
+        "constituencies": 5,
+        "reports": 380,
+        "latest": "2023-07-07T11:05:00Z"
+      }
+    ]
+  }
+}
