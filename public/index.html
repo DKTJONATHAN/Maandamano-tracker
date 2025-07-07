@@ -30,7 +30,7 @@
         <!-- Protest Selection -->
         <div>
           <label class="block text-gray-700 font-medium mb-1">Protest Type*</label>
-          <select name="protest" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500" required>
+          <select name="protest" class="w-full" required>
             <option value="" disabled selected>Select protest</option>
             <option value="#SabaSaba">#SabaSaba</option>
             <option value="#RutoMustGo">#RutoMustGo</option>
@@ -262,27 +262,30 @@
       confirmationModal.classList.add('hidden');
       
       try {
-        // Here we simulate writing to a JSON file
-        // In a real application, you would send this to a server
-        const reports = JSON.parse(localStorage.getItem('protestReports') || '[]');
-        reports.push(formDataToSubmit);
-        localStorage.setItem('protestReports', JSON.stringify(reports));
-        
-        // Show success message
-        document.getElementById('successMessage').classList.remove('hidden');
-        reportForm.reset();
-        
-        // Clear the select inputs
-        countySelect.clear();
-        constituencySelect.clear();
-        constituencySelect.clearOptions();
-        constituencySelect.addOption({value: "", text: "Select constituency"});
-        
-        // Hide success message after 3 seconds
-        setTimeout(() => {
-          document.getElementById('successMessage').classList.add('hidden');
-        }, 3000);
-        
+        const response = await fetch('/.netlify/functions/saveReport', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formDataToSubmit)
+        });
+
+        if (response.ok) {
+          // Show success message
+          document.getElementById('successMessage').classList.remove('hidden');
+          reportForm.reset();
+          
+          // Clear the select inputs
+          countySelect.clear();
+          constituencySelect.clear();
+          constituencySelect.clearOptions();
+          constituencySelect.addOption({value: "", text: "Select constituency"});
+          
+          // Hide success message after 3 seconds
+          setTimeout(() => {
+            document.getElementById('successMessage').classList.add('hidden');
+          }, 3000);
+        } else {
+          throw new Error('Failed to submit');
+        }
       } catch (error) {
         alert("Error submitting report. Please try again.");
         console.error(error);
