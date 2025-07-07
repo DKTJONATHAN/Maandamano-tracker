@@ -64,6 +64,7 @@
               <th class="px-4 py-2 text-left">Constituency</th>
               <th class="px-4 py-2 text-left">County</th>
               <th class="px-4 py-2 text-left">Reports</th>
+              <th class="px-4 py-2 text-left">Latest Report</th>
             </tr>
           </thead>
           <tbody id="hotspotsTable" class="divide-y divide-gray-200">
@@ -99,6 +100,7 @@
             <td class="px-4 py-2">${constituency.name}</td>
             <td class="px-4 py-2">${constituency.county}</td>
             <td class="px-4 py-2">${constituency.reports}</td>
+            <td class="px-4 py-2">${new Date(constituency.latestTimestamp).toLocaleString()}</td>
           </tr>
         `).join('');
 
@@ -118,6 +120,7 @@
       const constituencies = new Set();
       const constituencyCounts = {};
       const countyConstituencies = {};
+      const constituencyLatestTimestamp = {};
 
       reports.forEach(report => {
         if (report.county) {
@@ -137,6 +140,12 @@
             if (!countyConstituencies[report.constituency]) {
               countyConstituencies[report.constituency] = report.county;
             }
+            
+            // Track latest timestamp for each constituency
+            if (!constituencyLatestTimestamp[report.constituency] || 
+                new Date(report.timestamp) > new Date(constituencyLatestTimestamp[report.constituency])) {
+              constituencyLatestTimestamp[report.constituency] = report.timestamp;
+            }
           }
         }
       });
@@ -155,7 +164,8 @@
       const topConstituencies = constituencyEntries.slice(0, 10).map(([name, reports]) => ({
         name,
         county: countyConstituencies[name],
-        reports
+        reports,
+        latestTimestamp: constituencyLatestTimestamp[name]
       }));
 
       return {
