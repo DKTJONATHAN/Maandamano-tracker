@@ -40,7 +40,7 @@
         <!-- County Dropdown -->
         <div>
           <label class="block text-gray-700 font-medium mb-1">County*</label>
-          <select id="county" name="county" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500" required>
+          <select id="county" name="county" class="w-full" required>
             <option value="" disabled selected>Select county</option>
             <option value="Mombasa">Mombasa</option>
             <option value="Kwale">Kwale</option>
@@ -95,7 +95,7 @@
         <!-- Constituency Dropdown -->
         <div>
           <label class="block text-gray-700 font-medium mb-1">Constituency*</label>
-          <select id="constituency" name="constituency" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500" required>
+          <select id="constituency" name="constituency" class="w-full" required>
             <option value="" disabled selected>Select constituency</option>
           </select>
         </div>
@@ -185,13 +185,15 @@
     };
 
     // Initialize searchable select for counties
-    new TomSelect("#county", {
+    const countySelect = new TomSelect("#county", {
       create: false,
       sortField: {
         field: "text",
         direction: "asc"
       },
-      searchField: "text"
+      searchField: "text",
+      placeholder: "Select county",
+      allowEmptyOption: false
     });
 
     // Initialize searchable select for constituencies (will be updated when county changes)
@@ -201,19 +203,24 @@
         field: "text",
         direction: "asc"
       },
-      searchField: "text"
+      searchField: "text",
+      placeholder: "Select constituency",
+      allowEmptyOption: false
     });
 
     // County dropdown change handler
-    document.getElementById('county').addEventListener('change', function() {
-      const county = this.value;
+    countySelect.on('change', function(value) {
+      // Clear existing options
       constituencySelect.clear();
       constituencySelect.clearOptions();
+      
+      // Add default option
       constituencySelect.addOption({value: "", text: "Select constituency"});
       constituencySelect.setValue("");
       
-      if (county && constituencies[county]) {
-        constituencies[county].forEach(con => {
+      if (value && constituencies[value]) {
+        // Add all constituencies for the selected county
+        constituencies[value].forEach(con => {
           constituencySelect.addOption({value: con, text: con});
         });
       }
@@ -230,6 +237,12 @@
 
     reportForm.addEventListener('submit', function(e) {
       e.preventDefault();
+      
+      // Validate form
+      if (!this.protest.value || !this.county.value || !this.constituency.value || !this.town.value) {
+        alert("Please fill in all required fields");
+        return;
+      }
       
       // Collect form data
       formDataToSubmit = {
@@ -251,13 +264,19 @@
       try {
         // Here we simulate writing to a JSON file
         // In a real application, you would send this to a server
-        const reports = JSON.parse(localStorage.getItem('protestReports') || [];
+        const reports = JSON.parse(localStorage.getItem('protestReports') || '[]');
         reports.push(formDataToSubmit);
         localStorage.setItem('protestReports', JSON.stringify(reports));
         
         // Show success message
         document.getElementById('successMessage').classList.remove('hidden');
         reportForm.reset();
+        
+        // Clear the select inputs
+        countySelect.clear();
+        constituencySelect.clear();
+        constituencySelect.clearOptions();
+        constituencySelect.addOption({value: "", text: "Select constituency"});
         
         // Hide success message after 3 seconds
         setTimeout(() => {
