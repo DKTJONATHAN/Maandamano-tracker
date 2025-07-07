@@ -1,6 +1,231 @@
 [
   {
     "protest": "#SabaSaba",
+    "county": "Nairobi",
+    "constituency": "Starehe",
+    "town": "Nairobi CBD",
+    "timestamp": "2025-07-07T07:30:00.000Z",
+    "id": "1751872200000",
+    "ip": null
+  },
+  {
+    "protest": "#SabaSaba",
+    "county": "Nairobi",
+    "constituency": "Kamukunji",
+    "town": "Kamukunji",
+    "timestamp": "2025-07-07T07:45:00.000Z",
+    "id": "1751873100000",
+    "ip": null
+  },
+  {
+    "protest": "#SabaSaba",
+    "county": "Kajiado",
+    "constituency": "Kajiado East",
+    "town": "Kitengela",
+    "timestamp": "2025-07-07T08:00:00.000Z",
+    "id": "1751874000000",
+    "ip": null
+  },
+  {
+    "protest": "#SabaSaba",
+    "county": "Meru",
+    "constituency": "Igembe Central",
+    "town": "Maua",
+    "timestamp": "2025-07-07T08:15:00.000Z",
+    "id": "1751874900000",
+    "ip": null
+  },
+  {
+    "protest": "#SabaSaba",
+    "county": "Nairobi",
+    "constituency": "Kasarani",
+    "town": "Thika Road",
+    "timestamp": "2025-07-07T08:30:00.000Z",
+    "id": "1751875800000",
+    "ip": null
+  },
+  {
+    "protest": "#SabaSaba",
+    "county": "Meru",
+    "constituency": "Igembe South",
+    "town": "Meru",
+    "timestamp": "2025-07-07T08:45:00.000Z",
+    "id": "1751876700000",
+    "ip": null
+  },
+  {
+    "protest": "#SabaSaba",
+    "county": "Kiambu",
+    "constituency": "Kiambu",
+    "town": "Kiambu Town",
+    "timestamp": "2025-07-07T09:00:00.000Z",
+    "id": "1751877600000",
+    "ip": null
+  },
+  {
+    "protest": "#SabaSaba",
+    "county": "Nyeri",
+    "constituency": "Mathira",
+    "town": "Karatina",
+    "timestamp": "2025-07-07T09:15:00.000Z",
+    "id": "1751878500000",
+    "ip": null
+  },
+  {
+    "protest": "#SabaSaba",
+    "county": "Nairobi",
+    "constituency": "Westlands",
+    "town": "Kangemi",
+    "timestamp": "2025-07-07T09:30:00.000Z",
+    "id": "1751879400000",
+    "ip": null
+  },
+  {
+    "protest": "#SabaSaba",
+    "county": "Kajiado",
+    "constituency": "Kajiado East",
+    "town": "Kitengela",
+    "timestamp": "2025-07-07T09:45:00.000Z",
+    "id": "1751880300000",
+    "ip": null
+  },
+  {
+    "protest": "#SabaSaba",
+    "county": "Nairobi",
+    "constituency": "Starehe",
+    "town": "Nairobi CBD",
+    "timestamp": "2025-07-07T10:00:00.000Z",
+    "id": "1751881200000",
+    "ip": null
+  },
+  {
+    "protest": "#SabaSaba",
+    "county": "Meru",
+    "constituency": "Igembe Central",
+    "town": "Maua",
+    "timestamp": "2025-07-07T10:15:00.000Z",
+    "id": "1751882100000",
+    "ip": null
+  },
+  {
+    "protest": "#SabaSaba",
+    "county": "Kisii",
+    "constituency": "Nyaribari Chache",
+    "town": "Kisii",
+    "timestamp": "2025-07-07T10:30:00.000Z",
+    "id": "1751883000000",
+    "ip": null
+  },
+  {
+    "protest": "#SabaSaba",
+    "county": "Nairobi",
+    "constituency": "Kamukunji",
+    "town": "Kamukunji",
+    "timestamp": "2025-07-07T10:45:00.000Z",
+    "id": "1751883900000",
+    "ip": null
+  },
+  {
+    "protest": "#SabaSaba",
+    "county": "Kajiado",
+    "constituency": "Kajiado East",
+    "town": "Kitengela",
+    "timestamp": "2025-07-07T11:00:00.000Z",
+    "id": "1751884800000",
+    "ip": null
+  },
+  {
+    "protest": "#SabaSaba",
+    "county": "Nyeri",
+    "constituency": "Nyeri Town",
+    "town": "Nyeri",
+    "timestamp": "2025-07-07T11:15:00.000Z",
+    "id": "1751885700000",
+    "ip": null
+  },
+  {
+    "protest": "#SabaSaba",
+    "county": "Nairobi",
+    "constituency": "Kasarani",
+    "town": "Githurai",
+    "timestamp": "2025-07-07T11:30:00.000Z",
+    "id": "1751886600000",
+    "ip": null
+  },
+  {
+    "protest": "#SabaSaba",
+    "county": "Meru",
+    "constituency": "Igembe South",
+    "town": "Meru",
+    "timestamp": "2025-07-07T11:45:00.000Z",
+    "id": "1751887500000",
+    "ip": null
+  },
+  {
+    "protest": "#SabaSaba",
+    "county": "Kiambu",
+    "constituency": "Kiambu",
+    "town": "Kiambu Town",
+    "timestamp": "2025-07-07T12:00:00.000Z",
+    "id": "1751888400000",
+    "ip": null
+  },
+  {
+    "protest": "#SabaSaba",
+    "county": "Nairobi",
+    "constituency": "Starehe",
+    "town": "Nairobi CBD",
+    "timestamp": "2025-07-07T12:15:00.000Z",
+    "id": "1751889300000",
+    "ip": null
+  },
+  {
+    "protest": "#SabaSaba",
+    "county": "Kajiado",
+    "constituency": "Kajiado East",
+    "town": "Kitengela",
+    "timestamp": "2025-07-07T12:30:00.000Z",
+    "id": "1751890200000",
+    "ip": null
+  },
+  {
+    "protest": "#SabaSaba",
+    "county": "Meru",
+    "constituency": "Igembe Central",
+    "town": "Maua",
+    "timestamp": "2025-07-07T12:45:00.000Z",
+    "id": "1751891100000",
+    "ip": null
+  },
+  {
+    "protest": "#SabaSaba",
+    "county": "Nairobi",
+    "constituency": "Kamukunji",
+    "town": "Kamukunji",
+    "timestamp": "2025-07-07T13:00:00.000Z",
+    "id": "1751892000000",
+    "ip": null
+  },
+  {
+    "protest": "#SabaSaba",
+    "county": "Nakuru",
+    "constituency": "Nakuru Town West",
+    "town": "Nakuru",
+    "timestamp": "2025-07-07T13:15:00.000Z",
+    "id": "1751892900000",
+    "ip": null
+  },
+  {
+    "protest": "#SabaSaba",
+    "county": "Nairobi",
+    "constituency": "Westlands",
+    "town": "Westlands",
+    "timestamp": "2025-07-07T13:30:00.000Z",
+    "id": "1751893800000",
+    "ip": null
+  },
+  {
+    "protest": "#SabaSaba",
     "county": "Meru",
     "constituency": "Igembe Central",
     "town": "Kiengo",
@@ -29,19 +254,10 @@
   {
     "protest": "#SabaSaba",
     "county": "Nairobi",
-    "constituency": "Westlands",
-    "town": "Westlands",
-    "timestamp": "2025-07-07T14:05:00.000Z",
-    "id": "1751897100000",
-    "ip": null
-  },
-  {
-    "protest": "#SabaSaba",
-    "county": "Nairobi",
     "constituency": "Dagoretti North",
     "town": "Kawangware",
-    "timestamp": "2025-07-07T14:10:00.000Z",
-    "id": "1751897400000",
+    "timestamp": "2025-07-07T14:05:00.000Z",
+    "id": "1751897100000",
     "ip": null
   },
   {
@@ -91,20 +307,146 @@
   },
   {
     "protest": "#SabaSaba",
-    "county": "Nakuru",
-    "constituency": "Nakuru Town West",
-    "town": "Nakuru",
-    "timestamp": "2025-07-07T14:40:00.000Z",
-    "id": "1751899200000",
-    "ip": null
-  },
-  {
-    "protest": "#SabaSaba",
     "county": "Nairobi",
     "constituency": "Starehe",
     "town": "Nairobi CBD",
     "timestamp": "2025-07-07T14:45:00.000Z",
     "id": "1751899500000",
+    "ip": null
+  },
+  {
+    "protest": "#SabaSaba",
+    "county": "Kajiado",
+    "constituency": "Kajiado East",
+    "town": "Kitengela",
+    "timestamp": "2025-07-07T15:00:00.000Z",
+    "id": "1751900400000",
+    "ip": null
+  },
+  {
+    "protest": "#SabaSaba",
+    "county": "Meru",
+    "constituency": "Igembe Central",
+    "town": "Maua",
+    "timestamp": "2025-07-07T15:15:00.000Z",
+    "id": "1751901300000",
+    "ip": null
+  },
+  {
+    "protest": "#SabaSaba",
+    "county": "Nairobi",
+    "constituency": "Kamukunji",
+    "town": "Kamukunji",
+    "timestamp": "2025-07-07T15:30:00.000Z",
+    "id": "1751902200000",
+    "ip": null
+  },
+  {
+    "protest": "#SabaSaba",
+    "county": "Nyeri",
+    "constituency": "Mathira",
+    "town": "Karatina",
+    "timestamp": "2025-07-07T15:45:00.000Z",
+    "id": "1751903100000",
+    "ip": null
+  },
+  {
+    "protest": "#SabaSaba",
+    "county": "Nairobi",
+    "constituency": "Kasarani",
+    "town": "Kahawa West",
+    "timestamp": "2025-07-07T16:00:00.000Z",
+    "id": "1751904000000",
+    "ip": null
+  },
+  {
+    "protest": "#SabaSaba",
+    "county": "Kajiado",
+    "constituency": "Kajiado East",
+    "town": "Kitengela",
+    "timestamp": "2025-07-07T16:15:00.000Z",
+    "id": "1751904900000",
+    "ip": null
+  },
+  {
+    "protest": "#SabaSaba",
+    "county": "Meru",
+    "constituency": "Igembe South",
+    "town": "Meru",
+    "timestamp": "2025-07-07T16:30:00.000Z",
+    "id": "1751905800000",
+    "ip": null
+  },
+  {
+    "protest": "#SabaSaba",
+    "county": "Kiambu",
+    "constituency": "Kiambu",
+    "town": "Kiambu Town",
+    "timestamp": "2025-07-07T16:45:00.000Z",
+    "id": "1751906700000",
+    "ip": null
+  },
+  {
+    "protest": "#SabaSaba",
+    "county": "Kajiado",
+    "constituency": "Kajiado North",
+    "town": "Ngong",
+    "timestamp": "2025-07-07T17:00:00.000Z",
+    "id": "1751907600000",
+    "ip": null
+  },
+  {
+    "protest": "#SabaSaba",
+    "county": "Kajiado",
+    "constituency": "Kajiado East",
+    "town": "Kiserian",
+    "timestamp": "2025-07-07T17:15:00.000Z",
+    "id": "1751908500000",
+    "ip": null
+  },
+  {
+    "protest": "#SabaSaba",
+    "county": "Kirinyaga",
+    "constituency": "Kirinyaga Central",
+    "town": "Kagumo",
+    "timestamp": "2025-07-07T17:30:00.000Z",
+    "id": "1751909400000",
+    "ip": null
+  },
+  {
+    "protest": "#SabaSaba",
+    "county": "Kirinyaga",
+    "constituency": "Mwea",
+    "town": "Kimbimbi",
+    "timestamp": "2025-07-07T17:45:00.000Z",
+    "id": "1751910300000",
+    "ip": null
+  },
+  {
+    "protest": "#SabaSaba",
+    "county": "Kirinyaga",
+    "constituency": "Mwea",
+    "town": "Ngurubani",
+    "timestamp": "2025-07-07T18:00:00.000Z",
+    "id": "1751911200000",
+    "ip": null
+  },
+  {
+    "protest": "#SabaSaba",
+    "county": "Murang’a",
+    "constituency": "Kiharu",
+    "town": "Murang’a",
+    "timestamp": "2025-07-07T18:15:00.000Z",
+    "id": "1751912100000",
+    "ip": null
+  },
+  {
+    "protest": "#SabaSaba",
+    "county": "Nakuru",
+    "constituency": "Rongai",
+    "town": "Rongai",
+    "timestamp": "2025-07-07T18:30:00.000Z",
+    "id": "1751913000000",
     "ip": null
   }
 ]
