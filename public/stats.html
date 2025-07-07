@@ -21,7 +21,8 @@
   </nav>
 
   <main class="container mx-auto px-4 py-8">
-    <h1 class="text-2xl font-bold text-center mb-8 text-gray-800">Live Protest Statistics</h1>
+    <h1 class="text-2xl font-bold text-center mb-2 text-gray-800" id="protestTopic">Live Protest Statistics</h1>
+    <p class="text-center text-gray-600 mb-8" id="protestDate"></p>
 
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
@@ -53,6 +54,27 @@
       </div>
     </div>
 
+    <!-- County Rankings -->
+    <div class="bg-white rounded-lg shadow overflow-hidden mb-8">
+      <h3 class="text-lg font-semibold p-4 border-b">Top Counties by Activity</h3>
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-4 py-2 text-left">Rank</th>
+              <th class="px-4 py-2 text-left">County</th>
+              <th class="px-4 py-2 text-left">Towns Reported</th>
+              <th class="px-4 py-2 text-left">Total Reports</th>
+              <th class="px-4 py-2 text-left">Latest Report</th>
+            </tr>
+          </thead>
+          <tbody id="countiesTable" class="divide-y divide-gray-200">
+            <!-- Data will load here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
     <!-- Hotspots Table -->
     <div class="bg-white rounded-lg shadow overflow-hidden">
       <h3 class="text-lg font-semibold p-4 border-b">Protest Hotspots</h3>
@@ -63,7 +85,8 @@
               <th class="px-4 py-2 text-left">Rank</th>
               <th class="px-4 py-2 text-left">Constituency</th>
               <th class="px-4 py-2 text-left">County</th>
-              <th class="px-4 py-2 text-left">Reports</th>
+              <th class="px-4 py-2 text-left">Towns Reported</th>
+              <th class="px-4 py-2 text-left">Total Reports</th>
               <th class="px-4 py-2 text-left">Latest Report</th>
             </tr>
           </thead>
@@ -85,6 +108,17 @@
         // Process the data
         const stats = analyzeData(reports);
 
+        // Update protest topic
+        if (stats.protestTopic) {
+          document.getElementById('protestTopic').textContent = `Live Protest Statistics: ${stats.protestTopic}`;
+        }
+        
+        // Update protest date
+        if (reports.length > 0) {
+          const latestDate = new Date(reports[reports.length - 1].timestamp);
+          document.getElementById('protestDate').textContent = `As of ${latestDate.toLocaleString()}`;
+        }
+
         // Update cards
         document.getElementById('totalReports').textContent = stats.totalReports;
         document.getElementById('countiesActive').textContent = `${stats.activeCounties.length}/47`;
@@ -92,13 +126,26 @@
         document.getElementById('constituenciesActive').textContent = `${stats.activeConstituencies.length}/290`;
         document.getElementById('constituenciesPercentage').textContent = `${stats.constituencyPercentage}% of constituencies`;
 
+        // Update counties table
+        const countiesTable = document.getElementById('countiesTable');
+        countiesTable.innerHTML = stats.topCounties.map((county, index) => `
+          <tr>
+            <td class="px-4 py-2">${index + 1}</td>
+            <td class="px-4 py-2">${county.name}</td>
+            <td class="px-4 py-2">${county.towns}</td>
+            <td class="px-4 py-2">${county.reports}</td>
+            <td class="px-4 py-2">${new Date(county.latestTimestamp).toLocaleString()}</td>
+          </tr>
+        `).join('');
+
         // Update hotspots table
-        const tableBody = document.getElementById('hotspotsTable');
-        tableBody.innerHTML = stats.topConstituencies.map((constituency, index) => `
+        const hotspotsTable = document.getElementById('hotspotsTable');
+        hotspotsTable.innerHTML = stats.topConstituencies.map((constituency, index) => `
           <tr>
             <td class="px-4 py-2">${index + 1}</td>
             <td class="px-4 py-2">${constituency.name}</td>
             <td class="px-4 py-2">${constituency.county}</td>
+            <td class="px-4 py-2">${constituency.towns}</td>
             <td class="px-4 py-2">${constituency.reports}</td>
             <td class="px-4 py-2">${new Date(constituency.latestTimestamp).toLocaleString()}</td>
           </tr>
@@ -112,70 +159,105 @@
     }
 
     function analyzeData(reports) {
-      // Count total reports
-      const totalReports = reports.length;
+      // Extract protest topic from the first report
+      let protestTopic = "";
+      if (reports.length > 0 && reports[0].protest) {
+        protestTopic = reports[0].protest;
+      }
 
-      // Track unique counties and constituencies
-      const counties = new Set();
-      const constituencies = new Set();
-      const constituencyCounts = {};
-      const countyConstituencies = {};
-      const constituencyLatestTimestamp = {};
+      // Data structures for tracking
+      const countyData = {};
+      const constituencyData = {};
+      const allCounties = new Set();
+      const allConstituencies = new Set();
 
+      // Process each report
       reports.forEach(report => {
+        // Track counties
         if (report.county) {
-          counties.add(report.county);
+          allCounties.add(report.county);
           
-          // Track constituencies
-          if (report.constituency) {
-            constituencies.add(report.constituency);
-            
-            // Count reports per constituency
-            if (!constituencyCounts[report.constituency]) {
-              constituencyCounts[report.constituency] = 0;
-            }
-            constituencyCounts[report.constituency]++;
-            
-            // Track which county the constituency is in
-            if (!countyConstituencies[report.constituency]) {
-              countyConstituencies[report.constituency] = report.county;
-            }
-            
-            // Track latest timestamp for each constituency
-            if (!constituencyLatestTimestamp[report.constituency] || 
-                new Date(report.timestamp) > new Date(constituencyLatestTimestamp[report.constituency])) {
-              constituencyLatestTimestamp[report.constituency] = report.timestamp;
-            }
+          // Initialize county data if not exists
+          if (!countyData[report.county]) {
+            countyData[report.county] = {
+              reports: 0,
+              towns: new Set(),
+              latestTimestamp: ""
+            };
+          }
+          
+          // Update county data
+          countyData[report.county].reports++;
+          if (report.town) countyData[report.county].towns.add(report.town);
+          
+          // Update latest timestamp
+          if (!countyData[report.county].latestTimestamp || 
+              new Date(report.timestamp) > new Date(countyData[report.county].latestTimestamp)) {
+            countyData[report.county].latestTimestamp = report.timestamp;
+          }
+        }
+
+        // Track constituencies
+        if (report.constituency) {
+          allConstituencies.add(report.constituency);
+          
+          // Initialize constituency data if not exists
+          if (!constituencyData[report.constituency]) {
+            constituencyData[report.constituency] = {
+              county: report.county || "Unknown",
+              reports: 0,
+              towns: new Set(),
+              latestTimestamp: ""
+            };
+          }
+          
+          // Update constituency data
+          constituencyData[report.constituency].reports++;
+          if (report.town) constituencyData[report.constituency].towns.add(report.town);
+          
+          // Update latest timestamp
+          if (!constituencyData[report.constituency].latestTimestamp || 
+              new Date(report.timestamp) > new Date(constituencyData[report.constituency].latestTimestamp)) {
+            constituencyData[report.constituency].latestTimestamp = report.timestamp;
           }
         }
       });
 
-      // Convert to arrays
-      const activeCounties = Array.from(counties);
-      const activeConstituencies = Array.from(constituencies);
+      // Convert to arrays and sort
+      const activeCounties = Array.from(allCounties);
+      const activeConstituencies = Array.from(allConstituencies);
 
       // Calculate percentages
       const countyPercentage = ((activeCounties.length / 47) * 100).toFixed(1);
       const constituencyPercentage = ((activeConstituencies.length / 290) * 100).toFixed(1);
 
-      // Prepare top constituencies data
-      const constituencyEntries = Object.entries(constituencyCounts);
-      constituencyEntries.sort((a, b) => b[1] - a[1]);
-      const topConstituencies = constituencyEntries.slice(0, 10).map(([name, reports]) => ({
+      // Prepare top counties data
+      const countyEntries = Object.entries(countyData).map(([name, data]) => ({
         name,
-        county: countyConstituencies[name],
-        reports,
-        latestTimestamp: constituencyLatestTimestamp[name]
-      }));
+        towns: data.towns.size,
+        reports: data.reports,
+        latestTimestamp: data.latestTimestamp
+      })).sort((a, b) => b.towns - a.towns || b.reports - a.reports);
+
+      // Prepare top constituencies data
+      const constituencyEntries = Object.entries(constituencyData).map(([name, data]) => ({
+        name,
+        county: data.county,
+        towns: data.towns.size,
+        reports: data.reports,
+        latestTimestamp: data.latestTimestamp
+      })).sort((a, b) => b.towns - a.towns || b.reports - a.reports);
 
       return {
-        totalReports,
+        protestTopic,
+        totalReports: reports.length,
         activeCounties,
         activeConstituencies,
         countyPercentage,
         constituencyPercentage,
-        topConstituencies,
-        constituencyCounts: constituencyEntries.slice(0, 5)
+        topCounties: countyEntries.slice(0, 10),
+        topConstituencies: constituencyEntries.slice(0, 10),
+        topChartConstituencies: constituencyEntries.slice(0, 5)
       };
     }
 
@@ -206,7 +288,7 @@
         }
       );
 
-      // Hotspot Chart
+      // Hotspot Chart (now using doughnut like counties)
       const hotspotCtx = document.getElementById('hotspotChart');
       if (hotspotCtx.chart) {
         hotspotCtx.chart.destroy();
@@ -214,25 +296,26 @@
       hotspotCtx.chart = new Chart(
         hotspotCtx,
         {
-          type: 'bar',
+          type: 'doughnut',
           data: {
-            labels: stats.constituencyCounts.map(item => item[0]),
+            labels: stats.topChartConstituencies.map(item => item.name),
             datasets: [{
-              label: 'Number of Reports',
-              data: stats.constituencyCounts.map(item => item[1]),
-              backgroundColor: '#dc2626'
+              label: 'Number of Towns',
+              data: stats.topChartConstituencies.map(item => item.towns),
+              backgroundColor: [
+                '#dc2626',
+                '#f87171',
+                '#fca5a5',
+                '#fecaca',
+                '#fee2e2'
+              ]
             }]
           },
           options: {
             responsive: true,
-            scales: {
-              y: {
-                beginAtZero: true
-              }
-            },
             plugins: {
               legend: {
-                display: false
+                position: 'bottom'
               }
             }
           }
