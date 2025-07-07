@@ -25,7 +25,7 @@
   <main class="container mx-auto px-4 py-8 max-w-md">
     <div class="bg-white rounded-lg shadow-md p-6">
       <h1 class="text-2xl font-bold text-center mb-6 text-gray-800">Report Protest Activity</h1>
-      
+
       <form id="reportForm" class="space-y-4">
         <!-- Protest Selection -->
         <div>
@@ -107,7 +107,7 @@
         </div>
 
         <!-- Submit Button -->
-        <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md transition duration-200">
+        <button type="submit" id="submitBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md transition duration-200">
           Submit Report
         </button>
       </form>
@@ -115,6 +115,11 @@
       <!-- Success Message -->
       <div id="successMessage" class="hidden mt-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded-md text-center">
         Report submitted successfully!
+      </div>
+
+      <!-- Error Message -->
+      <div id="errorMessage" class="hidden mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-md text-center">
+        Error: <span id="errorText"></span>
       </div>
     </div>
   </main>
@@ -132,156 +137,189 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
-<script>
-  // Constituency data for all 47 counties
-  const constituencies = {
-    "Mombasa": ["Changamwe", "Jomvu", "Kisauni", "Nyali", "Likoni", "Mvita"],
-    "Kwale": ["Msambweni", "Lunga Lunga", "Matuga", "Kinango"],
-    "Kilifi": ["Kilifi North", "Kilifi South", "Kaloleni", "Rabai", "Ganze", "Malindi", "Magarini"],
-    "Tana River": ["Garsen", "Galole", "Bura"],
-    "Lamu": ["Lamu East", "Lamu West"],
-    "Taita-Taveta": ["Taveta", "Wundanyi", "Mwatate", "Voi"],
-    "Garissa": ["Garissa Township", "Balambala", "Lagdera", "Dadaab", "Fafi", "Ijara"],
-    "Wajir": ["Wajir North", "Wajir East", "Tarbaj", "Wajir West", "Eldas", "Wajir South"],
-    "Mandera": ["Mandera West", "Banissa", "Mandera North", "Mandera South", "Mandera East", "Lafey"],
-    "Marsabit": ["Moyale", "North Horr", "Saku", "Laisamis"],
-    "Isiolo": ["Isiolo North", "Isiolo South"],
-    "Meru": ["Igembe South", "Igembe Central", "Igembe North", "Tigania West", "Tigania East", "North Imenti", "Buuri", "Central Imenti", "South Imenti"],
-    "Tharaka-Nithi": ["Maara", "Chuka/Igambang'ombe", "Tharaka"],
-    "Embu": ["Manyatta", "Runyenjes", "Mbeere South", "Mbeere North"],
-    "Kitui": ["Mwingi North", "Mwingi West", "Mwingi Central", "Kitui West", "Kitui Rural", "Kitui Central", "Kitui East", "Kitui South"],
-    "Machakos": ["Masinga", "Yatta", "Kangundo", "Matungulu", "Kathiani", "Mavoko", "Machakos Town", "Mwala"],
-    "Makueni": ["Mbooni", "Kilome", "Kaiti", "Makueni", "Kibwezi West", "Kibwezi East"],
-    "Nyandarua": ["Kinangop", "Kipipiri", "Ol Kalou", "Ol Jorok", "Ndaragwa"],
-    "Nyeri": ["Tetu", "Kieni", "Mathira", "Othaya", "Mukurweini", "Nyeri Town"],
-    "Kirinyaga": ["Mwea", "Gichugu", "Ndia", "Kirinyaga Central"],
-    "Murang'a": ["Kangema", "Mathioya", "Kiharu", "Kigumo", "Maragwa", "Kandara", "Gatanga"],
-    "Kiambu": ["Gatundu South", "Gatundu North", "Juja", "Thika Town", "Ruiru", "Githunguri", "Kiambaa", "Kiambu", "Kabete", "Kikuyu", "Limuru", "Lari"],
-    "Turkana": ["Turkana North", "Turkana West", "Turkana Central", "Loima", "Turkana South", "Turkana East"],
-    "West Pokot": ["Kapenguria", "Sigor", "Kacheliba", "Pokot South"],
-    "Samburu": ["Samburu West", "Samburu North", "Samburu East"],
-    "Trans Nzoia": ["Kwanza", "Endebess", "Saboti", "Kiminini", "Cherangany"],
-    "Uasin Gishu": ["Soy", "Turbo", "Moiben", "Ainabkoi", "Kapseret", "Kesses"],
-    "Elgeyo-Marakwet": ["Marakwet East", "Marakwet West", "Keiyo North", "Keiyo South"],
-    "Nandi": ["Tinderet", "Aldai", "Nandi Hills", "Chesumei", "Emgwen", "Mosop"],
-    "Baringo": ["Tiaty", "Baringo North", "Baringo Central", "Baringo South", "Mogotio", "Eldama Ravine"],
-    "Laikipia": ["Laikipia West", "Laikipia East", "Laikipia North", "Laikipia South", "Nyahururu"],
-    "Nakuru": ["Molo", "Njoro", "Naivasha", "Gilgil", "Kuresoi South", "Kuresoi North", "Subukia", "Rongai", "Bahati", "Nakuru Town West", "Nakuru Town East"],
-    "Narok": ["Kilgoris", "Emurua Dikirr", "Narok North", "Narok East", "Narok South", "Narok West"],
-    "Kajiado": ["Kajiado North", "Kajiado Central", "Kajiado East", "Kajiado West", "Kajiado South"],
-    "Kericho": ["Kipkelion East", "Kipkelion West", "Ainamoi", "Bureti", "Belgut", "Sigowet-Soin"],
-    "Bomet": ["Sotik", "Chepalungu", "Bomet East", "Bomet Central", "Konoin"],
-    "Kakamega": ["Lugari", "Likuyani", "Malava", "Lurambi", "Navakholo", "Mumias West", "Mumias East", "Matungu", "Butere", "Khwisero", "Shinyalu", "Ikolomani"],
-    "Vihiga": ["Vihiga", "Sabatia", "Hamisi", "Luanda", "Emuhaya"],
-    "Bungoma": ["Mt. Elgon", "Sirisia", "Kabuchai", "Bumula", "Kanduyi", "Webuye East", "Webuye West", "Kimilili", "Tongaren"],
-    "Busia": ["Teso North", "Teso South", "Nambale", "Matayos", "Butula", "Funyula", "Budalangi"],
-    "Siaya": ["Ugenya", "Ugunja", "Alego Usonga", "Gem", "Bondo", "Rarieda"],
-    "Kisumu": ["Kisumu East", "Kisumu West", "Kisumu Central", "Seme", "Nyando", "Muhoroni", "Nyakach"],
-    "Homa Bay": ["Kasipul", "Kabondo Kasipul", "Karachuonyo", "Rangwe", "Homa Bay Town", "Ndhiwa", "Suba North", "Suba South"],
-    "Migori": ["Rongo", "Awendo", "Suna East", "Suna West", "Uriri", "Nyatike", "Kuria West", "Kuria East"],
-    "Kisii": ["Bonchari", "South Mugirango", "Bomachoge Borabu", "Bobasi", "Bomachoge Chache", "Nyaribari Masaba", "Nyaribari Chache", "Kitutu Chache North", "Kitutu Chache South"],
-    "Nyamira": ["Kitutu Masaba", "West Mugirango", "North Mugirango", "Borabu"],
-    "Nairobi": ["Dagoretti North", "Dagoretti South", "Lang'ata", "Kibra", "Roysambu", "Kasarani", "Ruaraka", "Embakasi South", "Embakasi North", "Embakasi Central", "Embakasi East", "Embakasi West", "Makadara", "Kamukunji", "Starehe", "Mathare", "Westlands"]
-  };
-
-  // Initialize searchable select for counties
-  const countySelect = new TomSelect("#county", {
-    create: false,
-    sortField: { field: "text", direction: "asc" },
-    searchField: "text",
-    placeholder: "Select county",
-    allowEmptyOption: false
-  });
-
-  // Initialize searchable select for constituencies
-  const constituencySelect = new TomSelect("#constituency", {
-    create: false,
-    sortField: { field: "text", direction: "asc" },
-    searchField: "text",
-    placeholder: "Select constituency",
-    allowEmptyOption: false
-  });
-
-  // County dropdown change handler
-  countySelect.on('change', function(value) {
-    constituencySelect.clear();
-    constituencySelect.clearOptions();
-    constituencySelect.addOption({value: "", text: "Select constituency"});
-    
-    if (value && constituencies[value]) {
-      constituencies[value].forEach(con => {
-        constituencySelect.addOption({value: con, text: con});
-      });
-    }
-  });
-
-  // Form submission
-  const reportForm = document.getElementById('reportForm');
-  const confirmationModal = document.getElementById('confirmationModal');
-  const confirmBtn = document.getElementById('confirmBtn');
-  const cancelBtn = document.getElementById('cancelBtn');
-  let formDataToSubmit = null;
-
-  reportForm.addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    // Validate form
-    if (!this.protest.value || !this.county.value || !this.constituency.value || !this.town.value) {
-      alert("Please fill in all required fields");
-      return;
-    }
-    
-    // Collect form data
-    formDataToSubmit = {
-      protest: this.protest.value,
-      county: this.county.value,
-      constituency: this.constituency.value,
-      town: this.town.value,
-      timestamp: new Date().toISOString()
+  <script>
+    // Constituency data for all 47 counties
+    const constituencies = {
+      "Mombasa": ["Changamwe", "Jomvu", "Kisauni", "Nyali", "Likoni", "Mvita"],
+      "Kwale": ["Msambweni", "Lunga Lunga", "Matuga", "Kinango"],
+      "Kilifi": ["Kilifi North", "Kilifi South", "Kaloleni", "Rabai", "Ganze", "Malindi", "Magarini"],
+      "Tana River": ["Garsen", "Galole", "Bura"],
+      "Lamu": ["Lamu East", "Lamu West"],
+      "Taita-Taveta": ["Taveta", "Wundanyi", "Mwatate", "Voi"],
+      "Garissa": ["Garissa Township", "Balambala", "Lagdera", "Dadaab", "Fafi", "Ijara"],
+      "Wajir": ["Wajir North", "Wajir East", "Tarbaj", "Wajir West", "Eldas", "Wajir South"],
+      "Mandera": ["Mandera West", "Banissa", "Mandera North", "Mandera South", "Mandera East", "Lafey"],
+      "Marsabit": ["Moyale", "North Horr", "Saku", "Laisamis"],
+      "Isiolo": ["Isiolo North", "Isiolo South"],
+      "Meru": ["Igembe South", "Igembe Central", "Igembe North", "Tigania West", "Tigania East", "North Imenti", "Buuri", "Central Imenti", "South Imenti"],
+      "Tharaka-Nithi": ["Maara", "Chuka/Igambang'ombe", "Tharaka"],
+      "Embu": ["Manyatta", "Runyenjes", "Mbeere South", "Mbeere North"],
+      "Kitui": ["Mwingi North", "Mwingi West", "Mwingi Central", "Kitui West", "Kitui Rural", "Kitui Central", "Kitui East", "Kitui South"],
+      "Machakos": ["Masinga", "Yatta", "Kangundo", "Matungulu", "Kathiani", "Mavoko", "Machakos Town", "Mwala"],
+      "Makueni": ["Mbooni", "Kilome", "Kaiti", "Makueni", "Kibwezi West", "Kibwezi East"],
+      "Nyandarua": ["Kinangop", "Kipipiri", "Ol Kalou", "Ol Jorok", "Ndaragwa"],
+      "Nyeri": ["Tetu", "Kieni", "Mathira", "Othaya", "Mukurweini", "Nyeri Town"],
+      "Kirinyaga": ["Mwea", "Gichugu", "Ndia", "Kirinyaga Central"],
+      "Murang'a": ["Kangema", "Mathioya", "Kiharu", "Kigumo", "Maragwa", "Kandara", "Gatanga"],
+      "Kiambu": ["Gatundu South", "Gatundu North", "Juja", "Thika Town", "Ruiru", "Githunguri", "Kiambaa", "Kiambu", "Kabete", "Kikuyu", "Limuru", "Lari"],
+      "Turkana": ["Turkana North", "Turkana West", "Turkana Central", "Loima", "Turkana South", "Turkana East"],
+      "West Pokot": ["Kapenguria", "Sigor", "Kacheliba", "Pokot South"],
+      "Samburu": ["Samburu West", "Samburu North", "Samburu East"],
+      "Trans Nzoia": ["Kwanza", "Endebess", "Saboti", "Kiminini", "Cherangany"],
+      "Uasin Gishu": ["Soy", "Turbo", "Moiben", "Ainabkoi", "Kapseret", "Kesses"],
+      "Elgeyo-Marakwet": ["Marakwet East", "Marakwet West", "Keiyo North", "Keiyo South"],
+      "Nandi": ["Tinderet", "Aldai", "Nandi Hills", "Chesumei", "Emgwen", "Mosop"],
+      "Baringo": ["Tiaty", "Baringo North", "Baringo Central", "Baringo South", "Mogotio", "Eldama Ravine"],
+      "Laikipia": ["Laikipia West", "Laikipia East", "Laikipia North", "Laikipia South", "Nyahururu"],
+      "Nakuru": ["Molo", "Njoro", "Naivasha", "Gilgil", "Kuresoi South", "Kuresoi North", "Subukia", "Rongai", "Bahati", "Nakuru Town West", "Nakuru Town East"],
+      "Narok": ["Kilgoris", "Emurua Dikirr", "Narok North", "Narok East", "Narok South", "Narok West"],
+      "Kajiado": ["Kajiado North", "Kajiado Central", "Kajiado East", "Kajiado West", "Kajiado South"],
+      "Kericho": ["Kipkelion East", "Kipkelion West", "Ainamoi", "Bureti", "Belgut", "Sigowet-Soin"],
+      "Bomet": ["Sotik", "Chepalungu", "Bomet East", "Bomet Central", "Konoin"],
+      "Kakamega": ["Lugari", "Likuyani", "Malava", "Lurambi", "Navakholo", "Mumias West", "Mumias East", "Matungu", "Butere", "Khwisero", "Shinyalu", "Ikolomani"],
+      "Vihiga": ["Vihiga", "Sabatia", "Hamisi", "Luanda", "Emuhaya"],
+      "Bungoma": ["Mt. Elgon", "Sirisia", "Kabuchai", "Bumula", "Kanduyi", "Webuye East", "Webuye West", "Kimilili", "Tongaren"],
+      "Busia": ["Teso North", "Teso South", "Nambale", "Matayos", "Butula", "Funyula", "Budalangi"],
+      "Siaya": ["Ugenya", "Ugunja", "Alego Usonga", "Gem", "Bondo", "Rarieda"],
+      "Kisumu": ["Kisumu East", "Kisumu West", "Kisumu Central", "Seme", "Nyando", "Muhoroni", "Nyakach"],
+      "Homa Bay": ["Kasipul", "Kabondo Kasipul", "Karachuonyo", "Rangwe", "Homa Bay Town", "Ndhiwa", "Suba North", "Suba South"],
+      "Migori": ["Rongo", "Awendo", "Suna East", "Suna West", "Uriri", "Nyatike", "Kuria West", "Kuria East"],
+      "Kisii": ["Bonchari", "South Mugirango", "Bomachoge Borabu", "Bobasi", "Bomachoge Chache", "Nyaribari Masaba", "Nyaribari Chache", "Kitutu Chache North", "Kitutu Chache South"],
+      "Nyamira": ["Kitutu Masaba", "West Mugirango", "North Mugirango", "Borabu"],
+      "Nairobi": ["Dagoretti North", "Dagoretti South", "Lang'ata", "Kibra", "Roysambu", "Kasarani", "Ruaraka", "Embakasi South", "Embakasi North", "Embakasi Central", "Embakasi East", "Embakasi West", "Makadara", "Kamukunji", "Starehe", "Mathare", "Westlands"]
     };
 
-    // Show confirmation modal
-    confirmationModal.classList.remove('hidden');
-  });
+    // Initialize searchable select for counties
+    const countySelect = new TomSelect("#county", {
+      create: false,
+      sortField: { field: "text", direction: "asc" },
+      searchField: "text",
+      placeholder: "Select county",
+      allowEmptyOption: false
+    });
 
-  // Handle confirmation
-  confirmBtn.addEventListener('click', async function() {
-    confirmationModal.classList.add('hidden');
-    
-    try {
-      const response = await fetch('/.netlify/functions/saveReport', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...formDataToSubmit,
-          auth: 'secure-submission-token' // Simple auth measure
-        })
-      });
+    // Initialize searchable select for constituencies
+    const constituencySelect = new TomSelect("#constituency", {
+      create: false,
+      sortField: { field: "text", direction: "asc" },
+      searchField: "text",
+      placeholder: "Select constituency",
+      allowEmptyOption: false
+    });
 
-      const result = await response.json();
-      
-      if (response.ok) {
-        document.getElementById('successMessage').classList.remove('hidden');
+    // County dropdown change handler
+    countySelect.on('change', function(value) {
+      constituencySelect.clear();
+      constituencySelect.clearOptions();
+      constituencySelect.addOption({value: "", text: "Select constituency"});
+
+      if (value && constituencies[value]) {
+        constituencies[value].forEach(con => {
+          constituencySelect.addOption({value: con, text: con});
+        });
+      }
+    });
+
+    // Form submission handling
+    const reportForm = document.getElementById('reportForm');
+    const confirmationModal = document.getElementById('confirmationModal');
+    const confirmBtn = document.getElementById('confirmBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const submitBtn = document.getElementById('submitBtn');
+    let formDataToSubmit = null;
+
+    // Input sanitization function
+    const sanitizeInput = (input) => {
+      return String(input)
+        .replace(/<[^>]*>?/gm, '') // Remove HTML tags
+        .substring(0, 100); // Limit length
+    };
+
+    reportForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      // Validate form
+      if (!this.protest.value || !this.county.value || !this.constituency.value || !this.town.value) {
+        showError("Please fill in all required fields");
+        return;
+      }
+
+      // Sanitize inputs
+      const sanitizedData = {
+        protest: sanitizeInput(this.protest.value),
+        county: sanitizeInput(this.county.value),
+        constituency: sanitizeInput(this.constituency.value),
+        town: sanitizeInput(this.town.value)
+      };
+
+      // Collect form data
+      formDataToSubmit = {
+        ...sanitizedData,
+        timestamp: new Date().toISOString()
+      };
+
+      // Show confirmation modal
+      confirmationModal.classList.remove('hidden');
+    });
+
+    // Handle confirmation
+    confirmBtn.addEventListener('click', async function() {
+      confirmationModal.classList.add('hidden');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting...';
+
+      try {
+        const response = await fetch('/.netlify/functions/saveReport', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify(formDataToSubmit)
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Submission failed');
+        }
+
+        showSuccess();
         reportForm.reset();
         countySelect.clear();
         constituencySelect.clear();
-        setTimeout(() => {
-          document.getElementById('successMessage').classList.add('hidden');
-        }, 3000);
-      } else {
-        throw new Error(result.error || 'Failed to submit report');
+      } catch (error) {
+        showError(error.message);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit Report';
       }
-    } catch (error) {
-      console.error('Submission error:', error);
-      alert(`Error: ${error.message}`);
-    }
-  });
+    });
 
-  // Handle cancellation
-  cancelBtn.addEventListener('click', function() {
-    confirmationModal.classList.add('hidden');
-  });
-</script>
+    // Handle cancellation
+    cancelBtn.addEventListener('click', function() {
+      confirmationModal.classList.add('hidden');
+    });
+
+    // Helper functions
+    function showSuccess() {
+      const successElement = document.getElementById('successMessage');
+      successElement.classList.remove('hidden');
+      successElement.scrollIntoView({ behavior: 'smooth' });
+      setTimeout(() => {
+        successElement.classList.add('hidden');
+      }, 3000);
+    }
+
+    function showError(message) {
+      const errorElement = document.getElementById('errorMessage');
+      const errorText = document.getElementById('errorText');
+      errorText.textContent = message;
+      errorElement.classList.remove('hidden');
+      errorElement.scrollIntoView({ behavior: 'smooth' });
+      setTimeout(() => {
+        errorElement.classList.add('hidden');
+      }, 3000);
+    }
+  </script>
 </body>
 </html>
