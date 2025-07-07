@@ -1,59 +1,65 @@
-// netlify/functions/saveReport.js
 const fs = require('fs');
 const path = require('path');
+const { Octokit } = require('@octokit/rest');
 
-exports.handler = async function(event, context) {
-  // Only allow POST requests
+exports.handler = async (event, context) => {
   if (event.httpMethod !== 'POST') {
-    return {
-      statusCode: 405,
-      body: JSON.stringify({ error: 'Method Not Allowed' })
-    };
+    return { statusCode: 405, body: "Method Not Allowed" };
   }
 
   try {
-    // Parse the incoming data
-    const incomingData = JSON.parse(event.body);
+    const { auth, ...reportData } = JSON.parse(event.body);
     
-    // Simple authentication check
-    if (incomingData.auth !== 'secure-submission-token') {
-      return {
-        statusCode: 401,
-        body: JSON.stringify({ error: 'Unauthorized' })
-      };
+    if (auth !== 'secure-submission-token') {
+      return { statusCode: 401, body: "Unauthorized" };
     }
 
-    // Prepare the data to save (remove auth token)
-    const { auth, ...reportData } = incomingData;
-    
-    // Define the path to the JSON file
-    const filePath = path.join(process.cwd(), 'netlify', 'functions', 'maandamanoCheck.json');
-    
-    // Initialize data array
-    let allReports = [];
-    
-    // Check if file exists and read existing data
-    if (fs.existsSync(filePath)) {
-      const fileData = fs.readFileSync(filePath, 'utf8');
-      allReports = JSON.parse(fileData);
+    // Initialize GitHub API
+    const octokit = new Octokit({
+      auth: process.env.GITHUB_TOKEN, // Store in Netlify env vars
+    });
+
+    // Define repo details
+    const [owner, repo] = process.env.GITHUB_REPO.split('/');
+    const filePath = 'data/maandamanoCheck.json';
+
+    // Fetch current file (if it exists)
+    let currentContent = [];
+    try {
+      const { data } = await octokit.repos.getContent({
+        owner,
+        repo,
+        path: filePath,
+      });
+      currentContent = JSON.parse(Buffer.from(data.content, 'base64').toString());
+    } catch (error) {
+      if (error.status !== 404) throw error; // File doesn't exist yet
     }
-    
-    // Add new report to the array
-    allReports.push(reportData);
-    
-    // Write the updated data back to the file
-    fs.writeFileSync(filePath, JSON.stringify(allReports, null, 2));
-    
+
+    // Append new report
+    currentContent.push({
+      ...reportData,
+      id: Date.now(),
+    });
+
+    // Commit updated file
+    await octokit.repos.createOrUpdateFileContents({
+      owner,
+      repo,
+      path: filePath,
+      message: 'Update maandamanoCheck.json',
+      content: Buffer.from(JSON.stringify(currentContent, null, 2)).toString('base64'),
+      sha: data?.sha, // Required if updating existing file
+    });
+
     return {
       statusCode: 200,
-      body: JSON.stringify({ message: 'Report saved successfully' })
+      body: JSON.stringify({ success: true }),
     };
-    
   } catch (error) {
-    console.error('Error:', error);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'Internal Server Error', details: error.message })
+      body: JSON.stringify({ error: error.message }),
     };
   }
 };
