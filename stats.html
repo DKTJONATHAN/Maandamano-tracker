@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maandamano Tracker - Live Stats</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-red-600 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fas fa-fist-raised text-2xl"></i>
+                <span class="text-xl font-bold">Maandamano Tracker</span>
+            </div>
+            <div>
+                <a href="index.html" class="px-3 py-2 rounded hover:bg-red-700">Report</a>
+                <a href="stats.html" class="px-3 py-2 rounded hover:bg-red-700">Live Stats</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Stats Content -->
+    <main class="container mx-auto px-4 py-12">
+        <h1 class="text-3xl font-bold mb-8 text-center text-gray-800">Live Maandamano Statistics</h1>
+        
+        <!-- Summary Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            <!-- National Turnout -->
+            <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                <h3 class="text-lg font-semibold text-gray-700 mb-2">National Turnout</h3>
+                <div class="text-4xl font-bold text-red-600 mb-2" id="nationalCount">Loading...</div>
+                <div class="text-gray-600" id="nationalPercentage"></div>
+                <div class="mt-4 h-4 bg-gray-200 rounded-full">
+                    <div id="nationalProgress" class="h-4 bg-red-600 rounded-full" style="width: 0%"></div>
+                </div>
+            </div>
+            
+            <!-- County Participation -->
+            <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                <h3 class="text-lg font-semibold text-gray-700 mb-2">County Participation</h3>
+                <div class="text-4xl font-bold text-red-600 mb-2" id="countyCount">Loading...</div>
+                <div class="text-gray-600" id="countyPercentage"></div>
+                <div class="mt-4 h-4 bg-gray-200 rounded-full">
+                    <div id="countyProgress" class="h-4 bg-red-600 rounded-full" style="width: 0%"></div>
+                </div>
+            </div>
+            
+            <!-- Constituency Participation -->
+            <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                <h3 class="text-lg font-semibold text-gray-700 mb-2">Constituency Participation</h3>
+                <div class="text-4xl font-bold text-red-600 mb-2" id="constituencyCount">Loading...</div>
+                <div class="text-gray-600" id="constituencyPercentage"></div>
+                <div class="mt-4 h-4 bg-gray-200 rounded-full">
+                    <div id="constituencyProgress" class="h-4 bg-red-600 rounded-full" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Charts -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">County Participation</h3>
+                <canvas id="countyChart" height="300"></canvas>
+            </div>
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Constituency Participation</h3>
+                <canvas id="constituencyChart" height="300"></canvas>
+            </div>
+        </div>
+        
+        <!-- Hotspots Table -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h3 class="text-xl font-semibold text-gray-800 mb-4">Protest Hotspots</h3>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">County</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Constituencies</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reports</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Latest Activity</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200" id="hotspotsTable">
+                        <!-- Data will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-12">
+        <div class="container mx-auto px-4 text-center">
+            <p>&copy; 2023 Maandamano Tracker. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Fetch and display data
+        async function loadData() {
+            try {
+                const response = await fetch('/api/stats');
+                const data = await response.json();
+                
+                // Update summary cards
+                document.getElementById('nationalCount').textContent = data.totalReports.toLocaleString();
+                document.getElementById('nationalPercentage').textContent = `${data.counties.length} counties participating`;
+                
+                document.getElementById('countyCount').textContent = data.counties.length;
+                document.getElementById('countyPercentage').textContent = `${Math.round((data.counties.length/47)*100)}% of all counties`;
+                document.getElementById('countyProgress').style.width = `${Math.round((data.counties.length/47)*100)}%`;
+                
+                document.getElementById('constituencyCount').textContent = data.totalConstituencies;
+                document.getElementById('constituencyPercentage').textContent = `${Math.round((data.totalConstituencies/290)*100)}% of all constituencies`;
+                document.getElementById('constituencyProgress').style.width = `${Math.round((data.totalConstituencies/290)*100)}%`;
+                
+                // Update hotspots table
+                const hotspotsTable = document.getElementById('hotspotsTable');
+                hotspotsTable.innerHTML = '';
+                
+                data.hotspots.forEach(hotspot => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap font-medium">${hotspot.county}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">${hotspot.constituencies}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">${hotspot.reports}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">${new Date(hotspot.latest).toLocaleString()}</td>
+                    `;
+                    hotspotsTable.appendChild(row);
+                });
+                
+                // Update charts
+                updateCharts(data);
+                
+            } catch (error) {
+                console.error('Error loading data:', error);
+            }
+        }
+        
+        function updateCharts(data) {
+            // County Chart
+            const countyCtx = document.getElementById('countyChart').getContext('2d');
+            new Chart(countyCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Participating', 'Not Participating'],
+                    datasets: [{
+                        data: [data.counties.length, 47 - data.counties.length],
+                        backgroundColor: ['#dc2626', '#e5e7eb'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+            
+            // Constituency Chart
+            const constituencyCtx = document.getElementById('constituencyChart').getContext('2d');
+            new Chart(constituencyCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Participating', 'Not Participating'],
+                    datasets: [{
+                        label: 'Constituencies',
+                        data: [data.totalConstituencies, 290 - data.totalConstituencies],
+                        backgroundColor: ['#dc2626', '#e5e7eb'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 290
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Load data initially
+        loadData();
+        
+        // Refresh data every 30 seconds
+        setInterval(loadData, 30000);
+    </script>
+</body>
+</html>
